@@ -156,11 +156,11 @@ public class FragmentResult extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                keywords = s;
-                if (!keywords.equals(""))
-                    refresh(keywords);
-                else
-                    userList.clear();
+                //keywords = s;
+                //if (!keywords.equals(""))
+                    //refresh(keywords);
+                //else
+                    //userList.clear();
                 return false;
             }
         });
