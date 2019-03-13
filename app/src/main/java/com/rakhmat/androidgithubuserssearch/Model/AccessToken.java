@@ -1,4 +1,4 @@
-package com.rakhmat.androidgithubuserssearch.Rest;
+package com.rakhmat.androidgithubuserssearch.Model;
 
 import com.google.gson.annotations.SerializedName;
 

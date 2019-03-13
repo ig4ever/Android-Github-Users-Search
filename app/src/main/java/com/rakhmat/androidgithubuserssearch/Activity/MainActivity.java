@@ -1,38 +1,18 @@
 package com.rakhmat.androidgithubuserssearch.Activity;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.rakhmat.androidgithubuserssearch.Fragment.FragmentResult;
 import com.rakhmat.androidgithubuserssearch.R;
-import com.rakhmat.androidgithubuserssearch.Rest.AccessToken;
-import com.rakhmat.androidgithubuserssearch.Rest.ApiClient;
-import com.rakhmat.androidgithubuserssearch.Rest.ApiInterface;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private final String clientId = "37de96e20fe5c60832c8";
@@ -73,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                     //Log.i("", "CODE : " + authCode);
                     authComplete = true;
                     bundle.putString("code", authCode);
+                    bundle.putString("client_id", clientId);
+                    bundle.putString("client_secret", clientSecret);
                     fragmentResult.setArguments(bundle);
 
                     loadFragment(fragmentResult);

@@ -1,7 +1,7 @@
 package com.rakhmat.androidgithubuserssearch.Rest;
 
+import com.rakhmat.androidgithubuserssearch.Model.AccessToken;
 import com.rakhmat.androidgithubuserssearch.Model.GetUser;
-import com.rakhmat.androidgithubuserssearch.Model.User;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -21,5 +21,5 @@ public interface ApiInterface {
             @Field("code") String code);
 
     @GET("search/users")
-    Call<GetUser> getUsers(@Query("q") String user);
+    Call<GetUser> getUsers(@Query("q") String user, @Query("per_page") String perPage, @Query("page") String page);
 }
