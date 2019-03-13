@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private final String redirectUri = "usergithubfinder://callback";
     private WebView web;
     private Dialog auth_dialog;
+    private Bundle bundle = new Bundle();
+    private FragmentResult fragmentResult = new FragmentResult();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
         web.setWebViewClient(new WebViewClient() {
 
             boolean authComplete = false;
-            Bundle bundle = new Bundle();
-            FragmentResult fragmentResult = new FragmentResult();
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon){
@@ -47,7 +47,14 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
+                //If user not login default
+                bundle.putString("code", "61fa3ac839c5e047ac6b5c3db953f379a51da5e8");
+                fragmentResult.setArguments(bundle);
+                loadFragment(fragmentResult);
+
                 if (url.contains("?code=") && authComplete != true) {
+                    detachFragment(fragmentResult);
+
                     Uri uri = Uri.parse(url);
                     String authCode = uri.getQueryParameter("code");
                     //Log.i("", "CODE : " + authCode);
@@ -62,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     auth_dialog.dismiss();
                     //Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
                 }else if(url.contains("error=access_denied")){
-                    Log.i("", "ACCESS_DENIED_HERE");
+                    //Log.i("", "ACCESS_DENIED_HERE");
                     authComplete = true;
                     //Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
 
@@ -80,6 +87,16 @@ public class MainActivity extends AppCompatActivity {
             final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.frame_container, fragment);
             transaction.addToBackStack(null);
+            transaction.commit();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean detachFragment(Fragment fragment) {
+        if (fragment != null) {
+            final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(fragment);
             transaction.commit();
             return true;
         }

@@ -92,42 +92,33 @@ public class FragmentResult extends Fragment {
             Retrofit.Builder builder = new Retrofit.Builder().baseUrl("https://github.com/").addConverterFactory(GsonConverterFactory.create());
             Retrofit retrofit = builder.build();
 
-            ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-            Call<AccessToken> accessToken = apiInterface.getAccessToken(clientId, clientSecret, token);
-            accessToken.enqueue(new Callback<AccessToken>() {
-                @Override
-                public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                    //Log.e("access token : ",response.body().getAccessToken());
-                    //Log.e("token type : ",response.body().getTokenType());
-                    tokenAccess = response.body().getAccessToken();
-                    tokenType = response.body().getTokenType();
+            //If user was login
+            if(clientId != null && clientSecret != null){
+                ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+                Call<AccessToken> accessToken = apiInterface.getAccessToken(clientId, clientSecret, token);
+                accessToken.enqueue(new Callback<AccessToken>() {
+                    @Override
+                    public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                        //Log.e("access token : ",response.body().getAccessToken());
+                        //Log.e("token type : ",response.body().getTokenType());
+                        tokenAccess = response.body().getAccessToken();
+                        tokenType = response.body().getTokenType();
 
-                    mApiInterface = ApiClient.createService(ApiInterface.class, tokenType + " " + tokenAccess);
+                        mApiInterface = ApiClient.createService(ApiInterface.class, tokenType + " " + tokenAccess);
+                    }
 
-                    searchViewUsers.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                        @Override
-                        public boolean onQueryTextSubmit(String s) {
-                            keywords = s;
-                            refresh(keywords);
-                            return false;
-                        }
+                    @Override
+                    public void onFailure(Call<AccessToken> call, Throwable t) {
 
-                        @Override
-                        public boolean onQueryTextChange(String s) {
-                            keywords = s;
-                            refresh(keywords);
-                            return false;
-                        }
-                    });
-                }
+                    }
+                });
+            }else {
+                mApiInterface = ApiClient.createService(ApiInterface.class, token);
+            }
 
-                @Override
-                public void onFailure(Call<AccessToken> call, Throwable t) {
-
-                }
-            });
         }
 
+        //When user scrolling recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -151,6 +142,29 @@ public class FragmentResult extends Fragment {
             }
         });
 
+        //when user type search bar
+        searchViewUsers.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                keywords = s;
+                if (!keywords.equals(""))
+                    refresh(keywords);
+                else
+                    userList.clear();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                keywords = s;
+                if (!keywords.equals(""))
+                    refresh(keywords);
+                else
+                    userList.clear();
+                return false;
+            }
+        });
+
         return view;
     }
 
@@ -166,8 +180,6 @@ public class FragmentResult extends Fragment {
                     //Log.e("", "List Data Total :" + userList.size());
                     mAdapter = new UserAdapter(userList);
                     recyclerView.setAdapter(mAdapter);
-                } else {
-                    userList.clear();
                 }
             }
 
@@ -190,8 +202,6 @@ public class FragmentResult extends Fragment {
                     }
                     mAdapter.notifyDataSetChanged();
                     //Log.e("", "List Data Total :" + userList.size());
-                } else {
-                    userList.clear();
                 }
             }
 
