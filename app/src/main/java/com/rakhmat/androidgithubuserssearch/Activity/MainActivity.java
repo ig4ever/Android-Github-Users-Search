@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
 
                 //If user not login default
-                bundle.putString("code", "61fa3ac839c5e047ac6b5c3db953f379a51da5e8");
+                bundle.putString("code", "89e239f5ba8f37fe01837a666f0e798380b67896");
                 fragmentResult.setArguments(bundle);
                 loadFragment(fragmentResult);
 

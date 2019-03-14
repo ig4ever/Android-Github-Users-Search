@@ -38,6 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class FragmentResult extends Fragment {
     private ApiInterface mApiInterface;
+    private ApiInterface mApiInterfaceBackup;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView recyclerView;
     private View view;
@@ -113,7 +114,7 @@ public class FragmentResult extends Fragment {
                     }
                 });
             }else {
-                mApiInterface = ApiClient.createService(ApiInterface.class, token);
+                mApiInterface = ApiClient.createService(ApiInterface.class, "ig4ever", token);
             }
 
         }
@@ -156,11 +157,11 @@ public class FragmentResult extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                //keywords = s;
-                //if (!keywords.equals(""))
-                    //refresh(keywords);
-                //else
-                    //userList.clear();
+                keywords = s;
+                if (!keywords.equals(""))
+                    refresh(keywords);
+                else
+                    userList.clear();
                 return false;
             }
         });
@@ -170,6 +171,34 @@ public class FragmentResult extends Fragment {
 
     public void refresh(final String username) {
         Call<GetUser> userCall = mApiInterface.getUsers(username, perPage + "", "1");
+        userCall.enqueue(new Callback<GetUser >() {
+            @Override
+            public void onResponse(Call<GetUser> call, Response<GetUser> response) {
+                if (response.isSuccessful()) {
+                    if(!response.body().getListDataUser().isEmpty()) {
+                        userList = response.body().getListDataUser();
+                    }
+                    //Log.e("", "List Data Total :" + userList.size());
+                    mAdapter = new UserAdapter(userList);
+                    recyclerView.setAdapter(mAdapter);
+                }
+
+                if(response.code() == 403){
+                    mApiInterfaceBackup = ApiClient.createService(ApiInterface.class, "Basic b25lbWlsbGlvbnRyb29wczpSYWtobWF0NDI0MTYyMg==");
+                    refreshBackup(username);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetUser> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Log.d("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void refreshBackup(final String username) {
+        Call<GetUser> userCall = mApiInterfaceBackup.getUsers(username, perPage + "", "1");
         userCall.enqueue(new Callback<GetUser >() {
             @Override
             public void onResponse(Call<GetUser> call, Response<GetUser> response) {
